@@ -13,6 +13,7 @@
 - **Bouton "Rejouer" sur l'écran d** : Bouton "Rejouer" sur l'écran de victoire *(validé le 2026-10-26)*
 - **Style visuel Pip-Boy** : Style visuel Pip-Boy : fond noir, texte et éléments vert phosphorescent, police rétro *(validé le 2026-10-26)*
 - **Release v1.0.0 Android APK** : APK compilé avec succès par GitHub Actions (Gradle assembleDebug), publié sur GitHub Releases (tag v1.0.0) et transmis par lien direct sur Signal. *(validé le 2026-10-26)*
+- **Remplacement ASCII Art par Image Stitch Vault Boy** : L'ASCII art textuel de l'écran de fin a été remplacé par l'illustration officielle Vault Boy Triomphant Pip-Boy extraite de Google Stitch (assets/vault-boy-victory.png). Implémenté par OpenHands dans Slice 02 et livré en APK v1.0.2. *(validé le 2026-10-26)*
 
 ## ❌ Exclusions & Choix Rejetés (Hors Périmètre)
 
