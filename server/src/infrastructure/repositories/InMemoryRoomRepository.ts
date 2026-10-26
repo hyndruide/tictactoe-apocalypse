@@ -21,6 +21,10 @@ export class InMemoryRoomRepository implements IRoomRepository {
     return null;
   }
 
+  getAll(): Room[] {
+    return Array.from(this.rooms.values());
+  }
+
   delete(code: string): void {
     this.rooms.delete(code);
   }

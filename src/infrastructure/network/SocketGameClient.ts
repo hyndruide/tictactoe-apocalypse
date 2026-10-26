@@ -95,6 +95,10 @@ export class SocketGameClient implements ISocketGameClient {
     this.socket?.emit('leaveRoom', { roomCode });
   }
 
+  reconnectRoom(roomCode: string, player: 'X' | 'O'): void {
+    this.socket?.emit('reconnectRoom', { roomCode, player });
+  }
+
   isConnected(): boolean {
     return this.socket?.connected ?? false;
   }

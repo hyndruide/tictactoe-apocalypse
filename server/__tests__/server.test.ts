@@ -74,4 +74,25 @@ describe('Server Domain & Use Cases', () => {
     disconnect.execute('socket-guest');
     expect(repo.findByCode(room.code)).toBeNull();
   });
+
+  it('normalizes room codes flexibly and permits joining without V- prefix or with lowercase', () => {
+    const repo = new InMemoryRoomRepository();
+    const mockEventEmitter = {
+      emitToSocket: jest.fn(),
+      emitToRoom: jest.fn(),
+      joinSocketToRoom: jest.fn(),
+      leaveSocketFromRoom: jest.fn(),
+    };
+
+    const createRoom = new CreateRoomUseCase(repo, mockEventEmitter);
+    const joinRoom = new JoinRoomUseCase(repo, mockEventEmitter);
+
+    const room = createRoom.execute('host-1');
+    const bareCode = room.code.replace('V-', ''); // e.g. "ABCD"
+
+    // Join with bare code in lowercase
+    const joinedBare = joinRoom.execute('guest-1', bareCode.toLowerCase());
+    expect(joinedBare).toBe(true);
+    expect(mockEventEmitter.joinSocketToRoom).toHaveBeenCalledWith('guest-1', room.code);
+  });
 });

@@ -4,5 +4,6 @@ export interface IRoomRepository {
   save(room: Room): void;
   findByCode(code: string): Room | null;
   findByPlayerId(playerId: string): Room | null;
+  getAll(): Room[];
   delete(code: string): void;
 }

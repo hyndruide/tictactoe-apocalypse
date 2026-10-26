@@ -55,11 +55,16 @@ export function useOnlineGameController(
 
       client.connect(urlToUse, {
         onConnected: () => {
-          setState((prev) => ({
-            ...prev,
-            connectionStatus: 'CONNECTED',
-            errorMessage: null,
-          }));
+          setState((prev) => {
+            if (prev.roomCode && prev.myPlayer && client.reconnectRoom) {
+              client.reconnectRoom(prev.roomCode, prev.myPlayer);
+            }
+            return {
+              ...prev,
+              connectionStatus: 'CONNECTED',
+              errorMessage: null,
+            };
+          });
         },
         onDisconnected: () => {
           setState((prev) => ({

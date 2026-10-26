@@ -12,7 +12,9 @@ import { SocketIOAdapter } from './infrastructure/adapters/SocketIOAdapter';
 
 const PORT = process.env.PORT || 8011;
 
-const app = createExpressApp();
+// Hexagonal dependency injection
+const roomRepository = new InMemoryRoomRepository();
+const app = createExpressApp(roomRepository);
 const httpServer = http.createServer(app);
 
 const io = new SocketIOServer(httpServer, {
@@ -26,8 +28,6 @@ const io = new SocketIOServer(httpServer, {
   pingInterval: 5000,     // 5s heartbeat interval
 });
 
-// Hexagonal dependency injection
-const roomRepository = new InMemoryRoomRepository();
 const eventEmitter = new SocketIOEventEmitter(io);
 
 const createRoomUseCase = new CreateRoomUseCase(roomRepository, eventEmitter);
@@ -42,7 +42,9 @@ const socketAdapter = new SocketIOAdapter(
   joinRoomUseCase,
   playMoveUseCase,
   handleDisconnectUseCase,
-  restartGameUseCase
+  restartGameUseCase,
+  roomRepository,
+  eventEmitter
 );
 
 socketAdapter.registerHandlers();
@@ -51,4 +53,4 @@ httpServer.listen(PORT, () => {
   console.log(`[VAULT-TEC RELAY] Serveur multijoueur actif sur le port ${PORT}`);
 });
 
-export { httpServer, app };
+export { httpServer, app, roomRepository };

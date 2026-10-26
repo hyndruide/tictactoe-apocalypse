@@ -1,7 +1,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import { IRoomRepository } from '../../application/ports/IRoomRepository';
 
-export function createExpressApp(): Express {
+export function createExpressApp(roomRepository?: IRoomRepository): Express {
   const app = express();
 
   app.use(cors());
@@ -20,6 +21,24 @@ export function createExpressApp(): Express {
       status: 'ok',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
+    });
+  });
+
+  app.get('/rooms', (_req, res) => {
+    if (!roomRepository) {
+      res.json({ count: 0, rooms: [] });
+      return;
+    }
+    const all = roomRepository.getAll();
+    res.json({
+      count: all.length,
+      rooms: all.map((r) => ({
+        code: r.code,
+        hasHost: Boolean(r.host),
+        hasGuest: Boolean(r.guest),
+        isFull: r.isFull(),
+        status: r.gameBoard.status.kind,
+      })),
     });
   });
 

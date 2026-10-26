@@ -45,5 +45,6 @@ export interface ISocketGameClient {
   playMove(roomCode: string, cellIndex: CellIndex): void;
   replay(roomCode: string): void;
   leaveRoom(roomCode: string): void;
+  reconnectRoom?(roomCode: string, player: Player): void;
   isConnected(): boolean;
 }

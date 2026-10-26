@@ -17,6 +17,8 @@ export class CreateRoomUseCase {
     this.roomRepository.save(room);
     this.eventEmitter.joinSocketToRoom(socketId, code);
 
+    console.log(`[CREATE ROOM SUCCESS] socketId=${socketId} roomCode=${code}`);
+
     this.eventEmitter.emitToSocket(socketId, 'roomCreated', {
       roomCode: code,
       player: 'X',
