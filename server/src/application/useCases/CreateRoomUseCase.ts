@@ -9,15 +9,15 @@ export class CreateRoomUseCase {
     private readonly eventEmitter: IEventEmitter
   ) {}
 
-  execute(socketId: string): Room {
+  execute(socketId: string, clientIp?: string): Room {
     const code = this.generateRoomCode();
     const host = new Player(socketId, 'X');
-    const room = new Room(code, host);
+    const room = new Room(code, host, clientIp);
 
     this.roomRepository.save(room);
     this.eventEmitter.joinSocketToRoom(socketId, code);
 
-    console.log(`[CREATE ROOM SUCCESS] socketId=${socketId} roomCode=${code}`);
+    console.log(`[CREATE ROOM SUCCESS] socketId=${socketId} ip=${clientIp} roomCode=${code}`);
 
     this.eventEmitter.emitToSocket(socketId, 'roomCreated', {
       roomCode: code,

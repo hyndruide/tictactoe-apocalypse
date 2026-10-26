@@ -5,12 +5,17 @@ export class Room {
   public readonly gameBoard: GameBoard = new GameBoard();
   public host: Player;
   public guest: Player | null = null;
+  public hostIp?: string;
+  public guestIp?: string;
+  public createdAt: number = Date.now();
 
   constructor(
     public readonly code: string,
-    hostPlayer: Player
+    hostPlayer: Player,
+    hostIp?: string
   ) {
     this.host = hostPlayer;
+    this.hostIp = hostIp;
   }
 
   isFull(): boolean {

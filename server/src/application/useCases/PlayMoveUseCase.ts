@@ -1,6 +1,7 @@
 import { CellIndex } from '../../domain/types';
 import { IEventEmitter } from '../ports/IEventEmitter';
 import { IRoomRepository } from '../ports/IRoomRepository';
+import { normalizeRoomCode } from '../../domain/normalizeRoomCode';
 
 export class PlayMoveUseCase {
   constructor(
@@ -9,8 +10,8 @@ export class PlayMoveUseCase {
   ) {}
 
   execute(socketId: string, roomCode: string, cellIndex: CellIndex): boolean {
-    const code = roomCode.trim().toUpperCase();
-    const room = this.roomRepository.findByCode(code);
+    const code = normalizeRoomCode(roomCode);
+    const room = this.roomRepository.findByCode(code) || this.roomRepository.findByCode(roomCode.trim().toUpperCase());
 
     if (!room) {
       this.eventEmitter.emitToSocket(socketId, 'error', {

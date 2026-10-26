@@ -9,7 +9,7 @@ export class JoinRoomUseCase {
     private readonly eventEmitter: IEventEmitter
   ) {}
 
-  execute(socketId: string, roomCode: string): boolean {
+  execute(socketId: string, roomCode: string, clientIp?: string): boolean {
     const rawTrimmed = (roomCode || '').trim().toUpperCase();
     const canonicalCode = normalizeRoomCode(roomCode);
 
@@ -42,6 +42,9 @@ export class JoinRoomUseCase {
 
     const guest = new Player(socketId, 'O');
     room.join(guest);
+    if (clientIp) {
+      room.guestIp = clientIp;
+    }
     this.roomRepository.save(room);
 
     this.eventEmitter.joinSocketToRoom(socketId, room.code);
@@ -51,9 +54,19 @@ export class JoinRoomUseCase {
         ? room.gameBoard.status.currentPlayer
         : 'X';
 
-    console.log(`[JOIN ROOM SUCCESS] socketId=${socketId} joined room=${room.code} as player O`);
+    console.log(
+      `[JOIN ROOM SUCCESS] guestSocket=${socketId} joined room=${room.code} as player O (hostSocket=${room.host.id})`
+    );
 
-    // Notify guest
+    // 1. Notifier spécifiquement l'Hôte (Joueur X) sur son socket direct
+    this.eventEmitter.emitToSocket(room.host.id, 'gameStarted', {
+      roomCode: room.code,
+      player: 'X',
+      board: room.gameBoard.board,
+      currentTurn,
+    });
+
+    // 2. Notifier l'Invité (Joueur O) sur son socket direct
     this.eventEmitter.emitToSocket(socketId, 'roomJoined', {
       roomCode: room.code,
       player: 'O',
@@ -61,10 +74,10 @@ export class JoinRoomUseCase {
       currentTurn,
     });
 
-    // Notify whole room that game has started
+    // 3. Diffuser à la salle Socket.IO
     this.eventEmitter.emitToRoom(room.code, 'gameStarted', {
       roomCode: room.code,
-      player: 'O',
+      player: 'X',
       board: room.gameBoard.board,
       currentTurn,
     });
