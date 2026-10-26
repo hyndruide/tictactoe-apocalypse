@@ -56,17 +56,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: actions/setup-buildx-action@v3
-
       - name: Build Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: server
-          file: server/Dockerfile
-          push: false
-          tags: tictactoe-server:ci
-          load: true
+        run: docker build -t tictactoe-server:ci server
 
       - name: Container Run Smoke Test
         run: |
