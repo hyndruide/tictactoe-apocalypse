@@ -12,6 +12,7 @@
 - **Écran de victoire avec imitati** : Écran de victoire avec imitation Vault Boy triomphant + message "Joueur X a gagné !" ou "Joueur O a gagné !" *(validé le 2026-10-26)*
 - **Bouton "Rejouer" sur l'écran d** : Bouton "Rejouer" sur l'écran de victoire *(validé le 2026-10-26)*
 - **Style visuel Pip-Boy** : Style visuel Pip-Boy : fond noir, texte et éléments vert phosphorescent, police rétro *(validé le 2026-10-26)*
+- **Release v1.0.0 Android APK** : APK compilé avec succès par GitHub Actions (Gradle assembleDebug), publié sur GitHub Releases (tag v1.0.0) et transmis par lien direct sur Signal. *(validé le 2026-10-26)*
 
 ## ❌ Exclusions & Choix Rejetés (Hors Périmètre)
 
