@@ -97,4 +97,27 @@ describe('GameScreen Integration', () => {
     expect(getByTestId('end-screen')).toBeTruthy();
     expect(getByText('Match nul !')).toBeTruthy();
   });
+
+  it('can switch to online multiplayer mode and back to local mode', () => {
+    const { getByTestId, getByText, queryByTestId } = render(<GameScreen />);
+
+    expect(getByTestId('switch-to-online-button')).toBeTruthy();
+
+    // Switch to online mode
+    act(() => {
+      fireEvent.press(getByTestId('switch-to-online-button'));
+    });
+
+    expect(getByTestId('online-game-screen')).toBeTruthy();
+    expect(getByText(/RELAIS RADIO MULTIJOUEUR/)).toBeTruthy();
+    expect(getByTestId('room-code-input')).toBeTruthy();
+
+    // Back to local mode
+    act(() => {
+      fireEvent.press(getByTestId('back-to-local-button'));
+    });
+
+    expect(queryByTestId('online-game-screen')).toBeNull();
+    expect(getByText(/Tour de X/)).toBeTruthy();
+  });
 });

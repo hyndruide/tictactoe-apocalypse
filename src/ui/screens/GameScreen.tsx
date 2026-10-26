@@ -1,15 +1,25 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useGameController } from '../hooks/useGameController';
 import { Board } from '../components/Board';
 import { StatusBar } from '../components/StatusBar';
 import { EndScreen } from './EndScreen';
+import { OnlineGameScreen } from './OnlineGameScreen';
 import { PIPBOY_THEME } from '../theme';
 
 export const GameScreen: React.FC = () => {
+  const [gameMode, setGameMode] = useState<'local' | 'online'>('local');
   const { board, status, handleCellPress, handleReplay } = useGameController();
 
   const isGameOver = status.kind !== 'PLAYING';
+
+  if (gameMode === 'online') {
+    return (
+      <View style={styles.safeArea} testID="game-screen">
+        <OnlineGameScreen onBackToLocal={() => setGameMode('local')} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} testID="game-screen">
@@ -35,6 +45,19 @@ export const GameScreen: React.FC = () => {
         <View style={styles.footer}>
           <Text style={styles.footerText}>[RADS: 0.02 rad/s | HP: 100/100]</Text>
           <Text style={styles.footerSubText}>MODE: 1 VS 1 LOCAL PASS-AND-PLAY</Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.onlineButton,
+              pressed && styles.onlineButtonPressed,
+            ]}
+            testID="switch-to-online-button"
+            accessibilityLabel="switch-to-online-button"
+            onPress={() => setGameMode('online')}
+          >
+            <Text style={styles.onlineButtonText}>
+              [ ACTIVER LE RELAIS EN LIGNE ]
+            </Text>
+          </Pressable>
         </View>
 
         {/* End Screen Overlay when game is won or draw */}
@@ -107,5 +130,25 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     marginTop: 4,
     letterSpacing: 1,
+  },
+  onlineButton: {
+    marginTop: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: PIPBOY_THEME.borderColor,
+    borderRadius: 4,
+    backgroundColor: '#0a1008',
+  },
+  onlineButtonPressed: {
+    backgroundColor: PIPBOY_THEME.primaryDim,
+  },
+  onlineButtonText: {
+    color: PIPBOY_THEME.primary,
+    fontFamily: PIPBOY_THEME.fontFamily,
+    fontSize: 11,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 });

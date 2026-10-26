@@ -5,3 +5,6 @@ __pycache__/
 .DS_Store
 build/
 dist/
+*.log
+server/dist/
+server/node_modules/

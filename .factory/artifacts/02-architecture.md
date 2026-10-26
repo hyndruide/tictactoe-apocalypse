@@ -263,3 +263,51 @@ src/
 
 > Règle Constitution : **aucun mock sur le domaine**. Les tests unitaires
 > appellent directement `boardLogic` et `gameUseCases` avec des données en dur.
+
+---
+
+## 10. Architecture Technique — Multijoueur en ligne (Tic-Tac-Toe)
+
+### 10.1 Vue d'ensemble
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENT (Mobile)                       │
+│                    React Native / Expo                       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ WebSocket (Socket.io-client)
+┌──────────────────────────▼──────────────────────────────────┐
+│                   ADAPTATEUR ENTRANT                         │
+│              SocketIOAdapter (infrastructure)                 │
+│   Traduit les événements Socket.io en appels Use Cases       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                    APPLICATION LAYER                         │
+│                      Use Cases (Ports IN)                    │
+│  CreateRoom | JoinRoom | PlayMove | HandleDisconnect         │
+└──────┬───────────────────┬──────────────────────────────────┘
+       │                   │
+┌──────▼──────┐   ┌────────▼────────────────────────────────┐
+│   DOMAINE   │   │         PORTS SORTANTS (interfaces)      │
+│  Entities   │   │  IRoomRepository | IEventEmitter         │
+│  GameBoard  │   └────────┬────────────────────────────────┘
+│  Room       │            │
+│  Player     │   ┌────────▼────────────────────────────────┐
+└─────────────┘   │         ADAPTATEURS SORTANTS             │
+                  │  InMemoryRoomRepository                  │
+                  │  SocketIOEventEmitter                    │
+                  └─────────────────────────────────────────┘
+```
+
+### 10.2 Stack Technique
+
+| Couche         | Technologie                          | Justification                          |
+|----------------|--------------------------------------|----------------------------------------|
+| Serveur        | Node.js 20 LTS + TypeScript strict   | Typage fort, écosystème Socket.io      |
+| Temps réel     | Socket.io 4.x                        | Gestion rooms, reconnexion, events     |
+| HTTP minimal   | Express 4.x                          | Health-check endpoint uniquement       |
+| Persistance    | In-Memory (Map<string, Room>)        | Persistance rapide en mémoire          |
+| Client         | React Native + Expo SDK              | Saisie code de partie & client Socket  |
+| Tests          | Jest + RNTL                          | 100% de tests automatisés              |
+

@@ -9,7 +9,7 @@
 
 ## 2. Périmètre
 
-### Inclus (MVP)
+### Inclus (MVP & Évolutions)
 - Grille 3×3 classique
 - 2 joueurs : X et O (pas de saisie de nom)
 - Alternance automatique des tours
@@ -18,13 +18,13 @@
 - Écran de victoire avec imitation Vault Boy triomphant + message "Joueur X a gagné !" ou "Joueur O a gagné !"
 - Bouton "Rejouer" sur l'écran de victoire
 - Style visuel Pip-Boy : fond noir, texte et éléments vert phosphorescent, police rétro
+- Multijoueur en ligne : Client réseau Socket.io, saisie de code de partie, création/rejoindre partie à distance
 
 ### Exclu (Hors périmètre)
 - Saisie de noms de joueurs
 - Mode solo contre l'IA
 - Scores cumulés / historique de parties
 - Animations complexes
-- Multijoueur en ligne
 - Sons / musique
 
 ---
