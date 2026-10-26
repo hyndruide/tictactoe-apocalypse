@@ -20,6 +20,10 @@ const io = new SocketIOServer(httpServer, {
     origin: '*',
     methods: ['GET', 'POST'],
   },
+  // Anti-DoS & Resource Exhaustion Protection
+  maxHttpBufferSize: 1e5, // 100 KB max payload per packet to prevent memory exhaustion
+  pingTimeout: 10000,     // 10s timeout to prune dead client connections
+  pingInterval: 5000,     // 5s heartbeat interval
 });
 
 // Hexagonal dependency injection

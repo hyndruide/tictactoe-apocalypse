@@ -7,7 +7,7 @@ import {
   defaultSocketGameClient,
 } from '../../infrastructure/network/SocketGameClient';
 
-export const DEFAULT_ONLINE_SERVER_URL = 'http://localhost:8011';
+export const DEFAULT_ONLINE_SERVER_URL = 'https://tictactoe.hyndruide.fr';
 
 export type OnlineGameController = {
   state: OnlineGameState;
