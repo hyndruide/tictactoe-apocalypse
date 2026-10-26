@@ -18,6 +18,7 @@ describe('EndScreen', () => {
       <EndScreen status={{ kind: 'WON', winner: 'X' }} onReplay={onReplay} />
     );
 
+    expect(getByTestId('vault-boy-image')).toBeTruthy();
     expect(getByText('Joueur X a gagné !')).toBeTruthy();
     const replayButton = getByTestId('replay-button');
     expect(replayButton).toBeTruthy();
@@ -28,10 +29,11 @@ describe('EndScreen', () => {
 
   it('renders draw state', () => {
     const onReplay = jest.fn();
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <EndScreen status={{ kind: 'DRAW' }} onReplay={onReplay} />
     );
 
+    expect(getByTestId('vault-boy-image')).toBeTruthy();
     expect(getByText('Match nul !')).toBeTruthy();
   });
 });
