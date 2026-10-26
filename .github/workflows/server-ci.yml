@@ -1,0 +1,97 @@
+name: Server CI / CD (Relais WebSocket)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - '.github/workflows/server-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - '.github/workflows/server-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    name: TypeScript Build & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Server Dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Compile Server TypeScript
+        run: |
+          cd server
+          npm run build
+
+      - name: Run Server Jest Tests
+        run: npx jest server/__tests__ --passWithNoTests
+
+      - name: Audit Server Dependencies (Security)
+        run: |
+          cd server
+          npm audit --audit-level=high
+
+  docker-build:
+    name: Container Docker Build & Smoke Test
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: server
+          file: server/Dockerfile
+          push: false
+          tags: tictactoe-server:ci
+          load: true
+
+      - name: Container Run Smoke Test
+        run: |
+          docker run -d --name test-relay -p 8011:8011 tictactoe-server:ci
+          sleep 4
+          curl --fail --retry 3 --retry-delay 2 http://localhost:8011/health || exit 1
+          curl --fail --retry 3 --retry-delay 2 http://localhost:8011/rooms || exit 1
+          docker logs test-relay
+          docker stop test-relay
+
+  production-probe:
+    name: Production Live Health Probe
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Probe Kimsufi Production Endpoint
+        run: |
+          echo "Vérification du relais en production..."
+          HEALTH_RES=$(curl -s -w "\nHTTP_STATUS:%{http_code}" https://tictactoe.hyndruide.fr/health)
+          echo "$HEALTH_RES"
+          ROOMS_RES=$(curl -s -w "\nHTTP_STATUS:%{http_code}" https://tictactoe.hyndruide.fr/rooms)
+          echo "$ROOMS_RES"
+          if echo "$HEALTH_RES" | grep -q "HTTP_STATUS:200"; then
+            echo "✅ Relais WebSocket Kimsufi Production est actif et sain (HTTP 200)."
+          else
+            echo "⚠️ Attention : le relais de production ne répond pas en HTTP 200."
+          fi

@@ -3,6 +3,11 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'server/**'
+      - '.github/workflows/server-ci.yml'
+      - 'README.md'
+      - 'specs/**'
   workflow_dispatch:
 
 jobs:
